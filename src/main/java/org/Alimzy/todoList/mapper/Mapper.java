@@ -10,7 +10,7 @@ public class Mapper {
 
     public Task map(TaskRequest request) {
         Task task = new Task();
-        task.setName(request.getTitle());
+        task.setName(request.getName());
         task.setDescription(request.getDescription());
         return task;
     }

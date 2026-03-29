@@ -9,6 +9,8 @@ import org.Alimzy.todoList.exception.TaskCannotBeFoundException;
 import org.Alimzy.todoList.mapper.Mapper;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -58,14 +60,44 @@ public class TaskServices{
             throw new IllegalArgumentException("Task name cannot be empty");
         }
 
-        if (!task.getName().equals(request.getName()) && taskRepository.existsByName(request.getTitle())) {
-            throw new TaskAlreadyExistException("Task with title '" + request.getName() + "' already exists");
+        if (!task.getName().equals(request.getName()) && taskRepository.existsByName(request.getName())) {
+            throw new TaskAlreadyExistException("Task with Name '" + request.getName() + "' already exists");
         }
 
         task.setName(request.getName());
         task.setDescription(request.getDescription());
         return taskMapper.map(taskRepository.save(task));
-
-
     }
+
+
+    public void deleteTask(String id){
+        Optional<Task> optionalTask = taskRepository.findById(id);
+
+        if (optionalTask.isEmpty()) {
+            throw new TaskCannotBeFoundException("Task with id '" + id + "' not found");
+        }
+
+        taskRepository.deleteById(id);
+    }
+
+    public List<TaskResponse> getAllTasks() {
+
+        List<Task> tasks = taskRepository.findAll();
+
+        if (tasks.isEmpty()) {
+            throw new IllegalArgumentException("No tasks found");
+        }
+
+        List<TaskResponse> responses = new ArrayList<>();
+
+        for (Task task : tasks) {
+
+            TaskResponse response = taskMapper.map(task);
+
+            responses.add(response);
+        }
+        return responses;
+    }
+
+
 }
